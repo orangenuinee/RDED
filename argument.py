@@ -56,6 +56,11 @@ parser.add_argument(
     default=2,
     type=int,
 )
+parser.add_argument(
+    "--imbalance_rate",
+    default=1,
+    type=float,
+)
 """Re Train"""
 parser.add_argument("--re-batch-size", default=0, type=int, metavar="N")
 parser.add_argument(
@@ -187,7 +192,13 @@ elif args.subset == "imagenet-nette":
     args.input_size = 224
     if args.arch_name in ["conv5", "conv6"] or args.stud_name in ["conv5", "conv6"]:
         args.input_size = 128
-
+elif args.subset in ["imagenetnetteLT", "imagenetwoofLT", "imagenet100LT","imagenetfruitLT","imagenetmeowLT","imagenetsquawkLT","imagenetyellowLT"]:
+    args.nclass = 10
+    args.classes = range(args.nclass)
+    args.val_ipc = 50
+    args.input_size = 224
+    if args.arch_name in ["conv5", "conv6"] or args.stud_name in ["conv5", "conv6"]:
+        args.input_size = 128
 elif args.subset == "imagenet-woof":
     args.nclass = 10
     args.classes = range(args.nclass)

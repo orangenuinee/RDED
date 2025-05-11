@@ -2,8 +2,8 @@ import os
 import shutil
 
 # 配置路径
-source_dir = "../imagenet/val"  # 原始训练集目录
-target_dir = "data/imagefruit/val"      # 新目录
+source_dir = "../NCFMnew/dataset/imagenet/train"  # 原始训练集目录
+target_dir = "data/imagefruit/train"      # 新目录
 os.makedirs(target_dir, exist_ok=True)
 
 # 类别顺序列表

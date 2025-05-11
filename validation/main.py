@@ -51,6 +51,7 @@ def main(args):
 def main_worker(args):
     print("=> using pytorch pre-trained teacher model '{}'".format(args.arch_name))
     teacher_model = load_model(
+        args=args,
         model_name=args.arch_name,
         dataset=args.subset,
         pretrained=True,
@@ -58,6 +59,7 @@ def main_worker(args):
     )
 
     student_model = load_model(
+        args = args,
         model_name=args.stud_name,
         dataset=args.subset,
         pretrained=False,
@@ -127,7 +129,7 @@ def main_worker(args):
 
     train_dataset = ImageFolder(
         classes=range(args.nclass),
-        imbalance_rate=0.05,
+        imbalance_rate=args.imbalance_rate,
         ipc=args.ipc,
         mem=True,
         shuffle=True,

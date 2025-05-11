@@ -25,7 +25,7 @@ def init_images(args, model=None):
         shuffle=True,
         root=args.train_dir,
         transform=None,
-        imbalance_rate=0.1,
+        imbalance_rate=args.imbalance_rate,
         mem=True
     )
     trainset.balance_classes()
@@ -98,6 +98,7 @@ def main(args):
             os.makedirs(args.syn_data_path)
 
         model_teacher = load_model(
+            args,
             model_name=args.arch_name,
             dataset=args.subset,
             pretrained=True,
