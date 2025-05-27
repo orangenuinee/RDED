@@ -229,13 +229,13 @@ elif args.subset == "imagenet-1k":
     args.val_ipc = 50
     args.input_size = 224
 
-elif args.subset == "cifar10":
+elif args.subset == "cifar10" or args.subset == "cifar10LT":
     args.nclass = 10
     args.classes = range(args.nclass)
     args.val_ipc = 1000
     args.input_size = 32
 
-elif args.subset == "cifar100":
+elif args.subset == "cifar100" or args.subset == "cifar100LT":
     args.nclass = 100
     args.classes = range(args.nclass)
     args.val_ipc = 100
@@ -257,6 +257,9 @@ if args.re_batch_size == 0:
     elif args.ipc == 10:
         args.re_batch_size = 50
         args.workers = 4
+    elif args.ipc ==20:
+        args.re_batch_size = 70
+        args.workers = 4
     elif args.ipc == 1:
         args.re_batch_size = 10
         args.workers = 0
@@ -271,7 +274,6 @@ if args.re_batch_size == 0:
     # ! tinyimagenet
     if args.subset == "tinyimagenet":
         args.re_batch_size = 100
-
 # reset batch size below ipc * nclass
 if args.re_batch_size > args.ipc * args.nclass:
     args.re_batch_size = int(args.ipc * args.nclass)
@@ -326,7 +328,7 @@ elif args.stud_name == "swin_v2_t":
 
 # special experiment
 if (
-    args.subset == "cifar100"
+    args.subset == "cifar100" or args.subset == "cifar100LT"
     and args.arch_name == "conv3"
     and args.stud_name == "conv3"
 ):

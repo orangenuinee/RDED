@@ -1,0 +1,3 @@
+python ./main.py --subset "cifar10LT" --arch-name "conv3" --factor 1 --num-crop 5 --mipc 300 --ipc 10 --stud-name "conv3" --imbalance_rate 0.01 --re-epochs 150 > cifar10ipc10imr001.log
+python ./main.py --subset "cifar10LT" --arch-name "conv3" --factor 1 --num-crop 5 --mipc 300 --ipc 20 --stud-name "conv3" --imbalance_rate 0.01 --re-epochs 150 > cifar10ipc20imr001.log
+python ./main.py --subset "cifar10LT" --arch-name "conv3" --factor 1 --num-crop 5 --mipc 300 --ipc 50 --stud-name "conv3" --imbalance_rate 0.01 --re-epochs 150 > cifar10ipc50imr001.log

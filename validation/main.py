@@ -21,7 +21,7 @@ import logging
 from tqdm import tqdm
 import torch.nn as nn
 import torch.nn.functional as F
-
+from torchvision import datasets, transforms
 from synthesize.utils import load_model
 from validation.utils import (
     ImageFolder,
@@ -221,7 +221,7 @@ def train(epoch, train_loader, teacher_model, student_model, args):
 
         if batch_idx % args.re_accum_steps == 0:
             optimizer.zero_grad()
-
+        #print(pred_label.argmax(1),labels)
         prec1, prec5 = accuracy(pred_label, labels, topk=(1, 5))
 
         pred_mix_label = student_model(mix_images)

@@ -9,7 +9,7 @@ import random
 import math
 from tqdm import tqdm
 import json
-
+from torchvision import datasets, transforms
 # keep top k largest values, and smooth others
 def keep_top_k(p, k, n_classes=1000):  # p is the softmax on label output
     if k == n_classes:
@@ -84,6 +84,46 @@ def get_parameters(model):
         dict(params=group_no_weight_decay, weight_decay=0.0),
     ]
     return groups
+class CIFAR100LT(datasets.CIFAR100):
+    def __init__(self, root, imbalance_rate=0.0005, nclass=100, train=True, transform=None, target_transform=None, download=False):
+        super().__init__(root, train=train, transform=transform, target_transform=target_transform, download=download)
+        self.imbalance_rate = imbalance_rate
+        self.nclass = nclass
+        np.random.seed(42)
+
+    def balance_classes(self):
+        """
+        根据不平衡率调整类的样本数量,
+        保持第一个类别与原始数量相同，后续类别按 imbalance_rate 递减
+        """
+        # 创建一个数组来存储每个类的索引
+        class_indices = {i: [] for i in range(self.nclass)}
+        
+        for idx, target in enumerate(self.targets):
+            class_indices[target].append(idx)
+
+        # 保持第一个类别的样本数与原始一致
+        first_class_size = len(class_indices[0])
+        
+        # 生成新的索引列表
+        new_indices = []
+        new_indices.extend(class_indices[0])  # 添加第一个类别的所有样本
+
+        # 计算并选择后续类别的样本数量
+        for cls_idx in range(1, self.nclass):
+            num_samples = math.ceil(first_class_size * (self.imbalance_rate ** (cls_idx / (self.nclass - 1))))
+            if num_samples > 0:  # 只处理大于0的样本数
+                num_samples = min(num_samples, len(class_indices[cls_idx]))  # 确保不超过可用样本数量
+                sampled_indices = np.random.choice(class_indices[cls_idx], size=num_samples, replace=False)
+                new_indices.extend(sampled_indices)
+
+        # 创建新的数据和目标基于新索引
+        self.data = self.data[new_indices]
+        self.targets = [self.targets[i] for i in new_indices]
+        # 更新样本数量
+        print(f'imbalance_rate: {self.imbalance_rate}')
+        print(f'新的数据集大小: {len(self.data)}')
+        return new_indices
 
 
 class ImageFolder(torchvision.datasets.ImageFolder):

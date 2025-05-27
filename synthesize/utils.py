@@ -169,7 +169,7 @@ def mix_images(input_img, out_size, factor, n):
 def load_model(args, model_name="resnet18", dataset="cifar10", pretrained=True, classes=[]):
     def get_model(model_name="resnet18"):
         if "conv" in model_name:
-            if dataset in ["cifar10", "cifar100"]:
+            if dataset in ["cifar10", "cifar100","cifar100LT","cifar10LT"]:
                 size = 32
             elif dataset == "tinyimagenet" or dataset == "tinyimagenetLT":
                 size = 64
@@ -231,11 +231,11 @@ def load_model(args, model_name="resnet18", dataset="cifar10", pretrained=True, 
             "imagenet-nette",
             "imagenet-woof",
             "tinyimagenet",
-            "cifar10",
+            "cifar10","cifar10LT","cifar100LT"
             "cifar100","imagenet-fruit","imagenet-meow","imagenet-quawk","imangenet-yellow","imagenetnetteLT", "imagenetwoofLT", "imagenet100LT","imagenetfruitLT","imagenetmeowLT","imagenetsquawkLT","imagenetyellowLT"
         ]:
             checkpoint = torch.load(
-                f"./data/pretrain_models/{dataset}/imr_{args.imbalance_rate}/premodel4_trained.pth.tar", map_location="cpu"
+                f"./data/pretrain_models/{dataset}/imr_{args.imbalance_rate}/premodel15_trained.pth.tar", map_location="cpu"
             )
             #print(checkpoint)
             checkpoint = {k.replace('module.', ''): v for k, v in checkpoint.items()}
