@@ -224,6 +224,15 @@ def load_model(args, model_name="resnet18", dataset="cifar10", pretrained=True, 
     # "imagenet-100" "imagenet-10" "imagenet-first" "imagenet-nette" "imagenet-woof"
     model = get_model(model_name)
     model = pruning_classifier(model, classes)
+    print(pretrained,dataset in [
+            "imagenet-100",
+            "imagenet-10",
+            "imagenet-nette",
+            "imagenet-woof",
+            "tinyimagenet",
+            "cifar10","cifar10LT","cifar100LT",
+            "cifar100","imagenet-fruit","imagenet-meow","imagenet-quawk","imangenet-yellow","imagenetnetteLT", "imagenetwoofLT", "imagenet100LT","imagenetfruitLT","imagenetmeowLT","imagenetsquawkLT","imagenetyellowLT"
+        ])
     if pretrained:
         if dataset in [
             "imagenet-100",
@@ -231,13 +240,13 @@ def load_model(args, model_name="resnet18", dataset="cifar10", pretrained=True, 
             "imagenet-nette",
             "imagenet-woof",
             "tinyimagenet",
-            "cifar10","cifar10LT","cifar100LT"
+            "cifar10","cifar10LT","cifar100LT",
             "cifar100","imagenet-fruit","imagenet-meow","imagenet-quawk","imangenet-yellow","imagenetnetteLT", "imagenetwoofLT", "imagenet100LT","imagenetfruitLT","imagenetmeowLT","imagenetsquawkLT","imagenetyellowLT"
         ]:
             checkpoint = torch.load(
                 f"./data/pretrain_models/{dataset}/imr_{args.imbalance_rate}/premodel15_trained.pth.tar", map_location="cpu"
             )
-            #print(checkpoint)
+
             checkpoint = {k.replace('module.', ''): v for k, v in checkpoint.items()}
             model.load_state_dict(checkpoint)
         elif dataset in ["imagenet-1k"]:

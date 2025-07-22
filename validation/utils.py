@@ -138,7 +138,7 @@ class ImageFolder(torchvision.datasets.ImageFolder):
         self.samples = []
         for c in range(len(classes)):
             dir_path = self.root + "/" + str(classes[c]).zfill(5)
-            print(dir_path)
+            # print(dir_path)
             file_ls = os.listdir(dir_path)
             if shuffle:
                 random.shuffle(file_ls)
@@ -174,28 +174,26 @@ class ImageFolder(torchvision.datasets.ImageFolder):
                 idx_class[label].append(i)
             except Exception as e:
                 print(label)
-            
         # 保持第一个类别的样本数与原始一致
         first_class_size = len(idx_class[0])
-        
+        sampled_indices = np.random.choice(idx_class[0], size=self.ipc, replace=False)
         # 生成新的索引列表
         new_indices = []
-        new_indices.extend(idx_class[0])  # 添加第一个类别的所有样本
+        new_indices.extend(sampled_indices)  # 添加第一个类别的所有样本
 
         # 计算并选择后续类别的样本数量
         for cls_idx in range(1, self.nclass):
             num_samples = math.ceil(first_class_size * (self.imbalance_rate ** (cls_idx / (self.nclass - 1))))
+            print(num_samples)
             if num_samples > 0:  # 只处理大于0的样本数
                 num_samples = min(num_samples, len(idx_class[cls_idx]))  # 确保不超过可用样本数量
                 sampled_indices = np.random.choice(idx_class[cls_idx], size=num_samples, replace=False)
-                if len(sampled_indices) < self.ipc:
-                    print(len(sampled_indices),self.ipc)
-                    sampled_indices = np.random.choice(sampled_indices, size=self.ipc, replace=True)
-                new_indices.extend(sampled_indices)
 
+                sampled_indices = np.random.choice(sampled_indices, size=self.ipc, replace=True)
+                new_indices.extend(sampled_indices)
+                print(len(new_indices))
+        # print(new_indices)
         # 创建新的数据和目标基于新索引
-        print(n)
-        print(len(new_indices))
         self.image_paths = [self.image_paths[i] for i in tqdm(new_indices, desc="Processing Samples")]
         self.targets = [self.targets[i] for i in tqdm(new_indices, desc="Processing Samples")]
         #self.targets = [s[1] for s in self.samples]
@@ -206,11 +204,11 @@ class ImageFolder(torchvision.datasets.ImageFolder):
         print(f'新的数据集大小: {len(self.samples)}')
         idx_class = [[] for _ in range(self.nclass)]
         n = len(self.targets)
-        for i in tqdm(range(n), desc="Processing Samples"):
-            label = self.targets[i]
-            idx_class[label].append(i)
-        for i in range(self.nclass):
-            print(f"第{i}类图片数目:{len(idx_class[i])}")
+        # for i in tqdm(range(n), desc="Processing Samples"):
+        #     label = self.targets[i]
+        #     idx_class[label].append(i)
+        # for i in range(self.nclass):
+        #     print(f"第{i}类图片数目:{len(idx_class[i])}")
         # with open('samples.json', 'w') as f:
         #     json.dump(self.samples, f)
         return new_indices

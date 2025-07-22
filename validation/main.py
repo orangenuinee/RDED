@@ -129,14 +129,13 @@ def main_worker(args):
 
     train_dataset = ImageFolder(
         classes=range(args.nclass),
-        imbalance_rate=args.imbalance_rate,
+        imbalance_rate=1,
         ipc=args.ipc,
         mem=True,
         shuffle=True,
         root=args.syn_data_path,
         transform=transforms.Compose(augment),
     )
-    train_dataset.balance_classes()
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=args.re_batch_size,

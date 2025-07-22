@@ -16,11 +16,14 @@ from torchvision import transforms
 import torchvision.models as models
 from synthesize.utils import *
 from validation.utils import ImageFolder
+import math
 class CIFAR100LT(datasets.CIFAR100):
-    def __init__(self, root, imbalance_rate=0.0005, nclass=100, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, root, imbalance_rate=0.0005, nclass=100, train=True, transform=None, target_transform=None, download=False, mpc = None):
         super().__init__(root, train=train, transform=transform, target_transform=target_transform, download=download)
         self.imbalance_rate = imbalance_rate
-        self.nclass = nclass
+        self.ipc = mpc
+
+        self.nclass = nclass[-1]+1
         np.random.seed(42)
 
     def balance_classes(self):
@@ -29,6 +32,7 @@ class CIFAR100LT(datasets.CIFAR100):
         保持第一个类别与原始数量相同，后续类别按 imbalance_rate 递减
         """
         # 创建一个数组来存储每个类的索引
+        
         class_indices = {i: [] for i in range(self.nclass)}
         
         for idx, target in enumerate(self.targets):
@@ -47,6 +51,9 @@ class CIFAR100LT(datasets.CIFAR100):
             if num_samples > 0:  # 只处理大于0的样本数
                 num_samples = min(num_samples, len(class_indices[cls_idx]))  # 确保不超过可用样本数量
                 sampled_indices = np.random.choice(class_indices[cls_idx], size=num_samples, replace=False)
+                if len(sampled_indices) < self.ipc:
+                    # print(len(sampled_indices),self.ipc)
+                    sampled_indices = np.random.choice(sampled_indices, size=self.ipc, replace=True)
                 new_indices.extend(sampled_indices)
 
         # 创建新的数据和目标基于新索引
